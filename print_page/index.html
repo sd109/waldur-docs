@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="../assets/waldur-logo.svg">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.732c4fb1.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -8092,7 +8092,30 @@ Installation<span class="w"> </span>date:<span class="w"> </span><span class="m"
 <h2 id="admin-guide-hardware-requirements-helm-based-deployment">Helm-based deployment</h2>
 <ul>
 <li>Kubernetes version: 1.18+</li>
-<li>Minimal namespace limits: TODO</li>
+<li>Minimal namespace limits:</li>
+<li>CPU: <strong>8000m</strong><ul>
+<li>Waldur: 4000m</li>
+<li>PostgreSQL: 4000m</li>
+</ul>
+</li>
+<li>RAM: <strong>10000Mi</strong><ul>
+<li>Waldur: 6000Mi</li>
+<li>PostgreSQL: 4000Mi</li>
+</ul>
+</li>
+<li>Storage: <strong>20Gi</strong> (PostgreSQL DB)</li>
+<li>Recommended namespace limits:</li>
+<li>CPU: <strong>12000m</strong><ul>
+<li>Waldur: 6000m</li>
+<li>PostgreSQL: 6000m</li>
+</ul>
+</li>
+<li>RAM: <strong>14000Mi</strong><ul>
+<li>Waldur: 8000Mi</li>
+<li>PostgreSQL: 6000Mi</li>
+</ul>
+</li>
+<li>Storage: <strong>40Gi</strong> (PostgreSQL DB)</li>
 </ul>
 <h2 id="admin-guide-hardware-requirements-component-specific-requirements">Component specific requirements</h2>
 <h3 id="admin-guide-hardware-requirements-waldur-mastermind-api">Waldur Mastermind (API)</h3>
@@ -9198,6 +9221,10 @@ docker<span class="w"> </span>compose<span class="w"> </span>restart
 <p>Keycloak is an Identity and Access Management software bundled with waldur-docker-compose.</p>
 <p>To create a keycloak admin account set <code>KEYCLOAK_ADMIN</code> env variable in <code>docker-compose.yaml</code> and <code>KEYCLOAK_ADMIN_PASSWORD</code> in <code>.env</code> file.</p>
 <p>After this, you can login to the admin interface at <a href="https://localhost/auth/admin">https://localhost/auth/admin</a> and create Waldur users.</p>
+<p>To use Keycloak as an identity provider within Waldur, follow the instruction <a href="https://docs.waldur.com/admin-guide/identities/keycloak/">here</a>.
+The discovery url to connect to Keycloak from the waldur-mastermind-api container is:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>http://keycloak:8080/auth/realms/&lt;YOUR<span class="w"> </span>REALM&gt;/.well-known/openid-configuration
+</code></pre></div></td></tr></table></div>
 <h2 id="admin-guide-deployment-docker-compose-integration-with-slurm">Integration with SLURM</h2>
 <p>The integration is described <a href="https://docs.waldur.com/admin-guide/providers/remote-slurm/">here</a>.</p>
 <h3 id="admin-guide-deployment-docker-compose-whitelabeling-settings">Whitelabeling settings</h3>
@@ -10953,7 +10980,7 @@ settings.</p>
 <span class="normal">5</span>
 <span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">WALDUR_AUTH_SOCIAL</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;KEYCLOAK_AUTH_URL&#39;</span><span class="p">:</span> <span class="s1">&#39;https://KEYCLOAK_ADDRESS:8080/auth/realms/test-waldur/.well-known/openid-configuration&#39;</span><span class="p">,</span>
  <span class="s1">&#39;KEYCLOAK_CLIENT_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;CLIENT_ID&#39;</span><span class="p">,</span>
- <span class="s1">&#39;KEYCLOAK_SECRET&#39;</span><span class="p">:</span> <span class="s1">&#39;SECRET&#39;</span>
+ <span class="s1">&#39;KEYCLOAK_SECRET&#39;</span><span class="p">:</span> <span class="s1">&#39;SECRET&#39;</span><span class="p">,</span>
  <span class="s1">&#39;KEYCLOAK_TOKEN_URL&#39;</span><span class="p">:</span> <span class="s1">&#39;https://KEYCLOAK_ADDRESS:8080/auth/realms/test-waldur/protocol/openid-connect/token&#39;</span><span class="p">,</span>
  <span class="s1">&#39;KEYCLOAK_USERINFO_URL&#39;</span><span class="p">:</span> <span class="s1">&#39;https://KEYCLOAK_ADDRESS:8080/auth/realms/test-waldur/protocol/openid-connect/userinfo&#39;</span>
 <span class="p">})</span>
@@ -18397,8 +18424,8 @@ In the latter case, the agent is required to have access to <code>docker</code> 
 </ul>
 <p>Alternatively, the agent can serve several offerings. For this:</p>
 <ol>
-<li>Create a config file for offerings with the following format:</li>
-</ol>
+<li>
+<p>Create a config file for offerings with the following format:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
@@ -18417,8 +18444,10 @@ In the latter case, the agent is required to have access to <code>docker</code> 
 <span class="w">  </span><span class="nt">waldur_api_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;token2&gt;</span>
 <span class="w">  </span><span class="nt">waldur_offering_uuid</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;uuid2&gt;</span>
 </code></pre></div></td></tr></table></div>
-<ol>
-<li>Add a variable <code>WALDUR_CONFIG_FILE_PATH</code> to the environment, for example:</li>
+</li>
+<li>
+<p>Add a variable <code>WALDUR_CONFIG_FILE_PATH</code> to the environment, for example:</p>
+</li>
 </ol>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">WALDUR_CONFIG_FILE_PATH</span><span class="o">=</span>/etc/waldur-site-agent/offerings.yaml
 </code></pre></div></td></tr></table></div>
@@ -18466,22 +18495,22 @@ docker-compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div></td></tr></table></div>
 <h3 id="admin-guide-providers-remote-slurm-systemd-deployment">Systemd deployment</h3>
 <p>In case of native deployment, you need to setup and run the a systemd service executing Python module.</p>
-<h4 id="admin-guide-providers-remote-slurm-slurm-cluster_1">SLURM cluster</h4>
+<h4 id="admin-guide-providers-remote-slurm-slurm-agent">SLURM agent</h4>
 <p>The agent requires <code>sacct</code> and <code>sacctmgr</code> to be accessible on a machine, so it should run on a headnode of the SLURM cluster.
 Firstly, install the waldur-site-agent:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>waldur-site-agent
 </code></pre></div></td></tr></table></div>
 <p>Secondly, put systemd unit, environment and and TRES config files to the corresponding locations.
 Don't forget to modify Waldur-related values the env files.</p>
-<h5 id="admin-guide-providers-remote-slurm-agent-pull-files-for-a-slurm-cluster">agent-pull files for a SLURM cluster</h5>
+<h5 id="admin-guide-providers-remote-slurm-agent-pull-files-for-a-slurm-agent">agent-pull files for a SLURM agent</h5>
 <ul>
-<li><code>systemd unit</code>: <a href="../admin-guide/providers/remote-slurm/systemd-conf/agent-pull/waldur-site-agent-pull.service">waldur-site-agent-pull.service</a></li>
-<li><code>example .env</code>: <a href="../admin-guide/providers/remote-slurm/systemd-conf/agent-pull/waldur-site-agent-pull.env">waldur-site-agent-pull.env</a></li>
+<li><code>systemd unit</code>: <a href="../admin-guide/providers/systemd-conf/agent-pull/waldur-site-agent-pull.service">waldur-site-agent-pull.service</a></li>
+<li><code>example .env</code>: <a href="../admin-guide/providers/systemd-conf/agent-pull/waldur-site-agent-pull.env">waldur-site-agent-pull.env</a></li>
 </ul>
-<h5 id="admin-guide-providers-remote-slurm-agent-push-files-for-a-slurm-cluster">agent-push files for a SLURM cluster</h5>
+<h5 id="admin-guide-providers-remote-slurm-agent-push-files-for-a-slurm-agent">agent-push files for a SLURM agent</h5>
 <ul>
-<li><code>systemd unit</code>: <a href="../admin-guide/providers/remote-slurm/systemd-conf/agent-push/waldur-site-agent-push.service">waldur-site-agent-push.service</a></li>
-<li><code>example .env</code>: <a href="../admin-guide/providers/remote-slurm/systemd-conf/agent-push/waldur-site-agent-push.env">waldur-site-agent-push.env</a></li>
+<li><code>systemd unit</code>: <a href="../admin-guide/providers/systemd-conf/agent-push/waldur-site-agent-push.service">waldur-site-agent-push.service</a></li>
+<li><code>example .env</code>: <a href="../admin-guide/providers/systemd-conf/agent-push/waldur-site-agent-push.env">waldur-site-agent-push.env</a></li>
 </ul>
 <h4 id="admin-guide-providers-remote-slurm-common-files">Common files</h4>
 <ul>
@@ -18521,8 +18550,8 @@ systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> 
 <h4 id="admin-guide-providers-remote-slurm-older-systemd-versions">Older systemd versions</h4>
 <p>If you want to deploy the agents on a machine with systemd revision older than 240, you should use files with legacy configuration:</p>
 <ul>
-<li>systemd legacy unit file for agent-pull: <a href="../admin-guide/providers/remote-slurm/systemd-conf/agent-pull/waldur-site-agent-pull-legacy.service">waldur-site-agent-pull-legacy.service</a></li>
-<li>systemd legacy unit file for agent-push: <a href="../admin-guide/providers/remote-slurm/systemd-conf/agent-push/waldur-site-agent-push-legacy.service">waldur-site-agent-push-legacy.service</a></li>
+<li>systemd legacy unit file for agent-pull: <a href="../admin-guide/providers/systemd-conf/agent-pull/waldur-site-agent-pull-legacy.service">waldur-site-agent-pull-legacy.service</a></li>
+<li>systemd legacy unit file for agent-push: <a href="../admin-guide/providers/systemd-conf/agent-push/waldur-site-agent-push-legacy.service">waldur-site-agent-push-legacy.service</a></li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
@@ -18540,7 +18569,7 @@ The script <code>waldur_slurm_load_components</code> sends this data to Waldur:<
 </code></pre></div></td></tr></table></div>
 <p>If a user wants to change this information, a path of a custom config file should be set for <code>SLURM_TRES_CONFIG_PATH</code> variable.</p>
 <h2 id="admin-guide-providers-remote-slurm-service-provider-configuration">Service provider configuration</h2>
-<h3 id="admin-guide-providers-remote-slurm-slurm-cluster_2">SLURM cluster</h3>
+<h3 id="admin-guide-providers-remote-slurm-slurm">SLURM</h3>
 <p>The agents require existing offering data in Waldur.
 As a service provider owner, you should create an offering in the marketplace:</p>
 <ul>
@@ -18962,6 +18991,12 @@ Background task should update this field before transiting into an erred
 state.</p>
 <p>Cleaning of the error state of the model instance should clean up also
 <code>error_message</code> field.</p></section><section class="print-page" id="developer-guide-events"><h1 id="developer-guide-events-events">Events</h1>
+<h2 id="developer-guide-events-access_subnets">Access_subnets</h2>
+<ul>
+<li>access_subnet_creation_succeeded</li>
+<li>access_subnet_deletion_succeeded</li>
+<li>access_subnet_update_succeeded</li>
+</ul>
 <h2 id="developer-guide-events-auth">Auth</h2>
 <ul>
 <li>auth_logged_in_with_username</li>
@@ -20562,69 +20597,8 @@ increased only for a stopped VM.</p></section><h1 class='nav-section-title-end'>
 <span class="w">  </span><span class="p">);</span>
 <span class="p">};</span>
 </code></pre></div></td></tr></table></div>
-<h2 id="developer-guide-ui-tables-migration-example">Migration example</h2>
-<p>Previously we used <code>connectTable</code> higher-order component, but it is deprecated now.
-Previous example looked like so.</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">translate</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@waldur/i18n&#39;</span><span class="p">;</span>
-<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Table</span><span class="p">,</span><span class="w"> </span><span class="nx">createFetcher</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@waldur/table&#39;</span><span class="p">;</span>
-<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">useTable</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;@waldur/table/utils&#39;</span><span class="p">;</span>
-
-<span class="kd">const</span><span class="w"> </span><span class="nx">PureRolesList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">tableProps</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span>
-<span class="w">    </span><span class="o">&lt;</span><span class="nx">Table</span>
-<span class="w">      </span><span class="p">{...</span><span class="nx">tableProps</span><span class="p">}</span>
-<span class="w">      </span><span class="nx">columns</span><span class="o">=</span><span class="p">{[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">          </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">translate</span><span class="p">(</span><span class="s1">&#39;Name&#39;</span><span class="p">),</span>
-<span class="w">          </span><span class="nx">render</span><span class="o">:</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">row</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">row</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">          </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">translate</span><span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">),</span>
-<span class="w">          </span><span class="nx">render</span><span class="o">:</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">row</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">row</span><span class="p">.</span><span class="nx">description</span><span class="p">,</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">          </span><span class="nx">title</span><span class="o">:</span><span class="w"> </span><span class="kt">translate</span><span class="p">(</span><span class="s1">&#39;Assigned users count&#39;</span><span class="p">),</span>
-<span class="w">          </span><span class="nx">render</span><span class="o">:</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">row</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">row</span><span class="p">.</span><span class="nx">users_count</span><span class="p">,</span>
-<span class="w">        </span><span class="p">},</span>
-<span class="w">      </span><span class="p">]}</span>
-<span class="w">    </span><span class="o">/&gt;</span>
-<span class="w">  </span><span class="p">);</span>
-<span class="p">};</span>
-
-<span class="k">export</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">RolesList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">connectTable</span><span class="p">({</span>
-<span class="w">  </span><span class="nx">table</span><span class="o">:</span><span class="w"> </span><span class="sb">`RolesList`</span><span class="p">,</span>
-<span class="w">  </span><span class="nx">fetchData</span><span class="o">:</span><span class="w"> </span><span class="kt">createFetcher</span><span class="p">(</span><span class="s1">&#39;roles&#39;</span><span class="p">),</span>
-<span class="p">})(</span><span class="nx">PureRolesList</span><span class="p">);</span>
-</code></pre></div></td></tr></table></div></section><section class="print-page" id="developer-guide-ui-terminology_policy"><h1 id="developer-guide-ui-terminology_policy-terminology-policy">Terminology policy</h1>
+<p>Column definition consists of two mandatory fields: <code>title</code> and <code>render</code>.
+In order to be able to make column optional, please specify <code>hasOptionalColumns</code> property for table and ensure that <code>key</code> property is defined for columns.</p></section><section class="print-page" id="developer-guide-ui-terminology_policy"><h1 id="developer-guide-ui-terminology_policy-terminology-policy">Terminology policy</h1>
 <p>We prefer British English over American English. For example, we use <code>cancelled</code> instead of <code>canceled</code>.</p>
 <p>Should be applied for naming buttons, separate pages of the process and in list of actions.</p>
 <p><strong>Add</strong> / <strong>Remove</strong></p>
@@ -23285,7 +23259,7 @@ You need to provision at least one VPC package from a suitable provider in order
     <script id="__config" type="application/json">{"base": "/", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.a7c05c9e.min.js"></script>
+      <script src="../assets/javascripts/bundle.5cfa9459.min.js"></script>
       
         <script src="../js/print-site.js"></script>
       
